@@ -13,11 +13,19 @@ class Alien(Sprite):
 
         # Load the alien image and set its rect attribute.
         self.image = pygame.image.load('images/alien.png')
+
+        # Scale the image to be the same size as the ship's image.
+        original_width = self.image.get_width()
+        original_height = self.image.get_height()
+        new_width = original_width // 6
+        new_height = original_height // 6
+        self.image = pygame.transform.scale(self.image, (new_width, new_height))
+
         self.rect = self.image.get_rect()
 
-        # Start each new alien near the top left of the screen.
-        self.rect.x = self.rect.width
-        self.rect.y = self.rect.height
+        # Start each new alien at the top left of the screen.
+        self.rect.x = 0
+        self.rect.y = 0
 
         # Store the alien's exact horizontal position.
         self.x = float(self.rect.x)
