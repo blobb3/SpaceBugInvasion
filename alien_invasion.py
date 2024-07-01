@@ -1,12 +1,12 @@
 import sys
 import pygame
 from settings import Settings
-from ship import  Ship
+from ship import Ship
 
 class AlienInvasion:
     """Overall class to manage game assets and behavior"""
 
-    def __init__ (self):
+    def __init__(self):
         """Initialize the game, and create game resources"""
         pygame.init()  # initializes background settings
 
@@ -23,14 +23,15 @@ class AlienInvasion:
         self.ship = Ship(self)
 
         # Set the background color
-        self.bg_color = (230, 230, 230)
+        self.bg_color = (15, 15, 70)  # dark blue
 
     # game is controlled through run_game()-method
     def run_game(self):
         """Start the main loop for the game"""
         while True: 
-            self._check_events()           
-            
+            self._check_events()
+            self._update_screen()  # Update the screen after checking events
+
             #create instance of the class Clock
             self.clock.tick(60) # framerate for game -> loop runs exactly 60 times per second
 
@@ -41,16 +42,12 @@ class AlienInvasion:
                     sys.exit()
         
     def _update_screen(self):
-         """Update images on the screen, and flip to the new screen"""
-         self.screen.fill(self.settings.bg_color) # Redraw the screen during each pass through the loop 
-         self.ship.blitme()# Draw the ship on the screen on top of the background
-         pygame.display.flip() # Make the most recently drawn screen visible
-         
-
-
+        """Update images on the screen, and flip to the new screen"""
+        self.screen.fill(self.bg_color)  # Redraw the screen during each pass through the loop 
+        self.ship.blitme()  # Draw the ship on the screen on top of the background
+        pygame.display.flip()  # Make the most recently drawn screen visible
 
 if __name__ == '__main__':
-    # Mke a game instance, and run the game.
+    # Make a game instance, and run the game.
     ai = AlienInvasion()
     ai.run_game()
-
