@@ -39,6 +39,7 @@ class Ship:
             self.x += self.settings.ship_speed
         if self.moving_left and self.rect.left > 0:
             self.x -= self.settings.ship_speed
+            
         # Update rect object form self.x
         self.rect.x = self.x
 
