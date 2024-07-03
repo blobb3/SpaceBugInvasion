@@ -38,7 +38,7 @@ class AlienInvasion:
             #create instance of the classes ship, bullets, clock
             self._check_events()
             self.ship.update() # position changes, when keyboard event
-            self.bullets.update() # update position of bullets in while loop
+            self._update_bullets() # update position of bullets in while loop
             self._update_aliens() # Update the position of aliens
             self._update_screen()  # Update the screen after checking events
             self.clock.tick(60) # framerate for game -> loop runs exactly 60 times per second
@@ -87,6 +87,11 @@ class AlienInvasion:
             if bullet.rect.bottom <= 0:
                 self.bullets.remove(bullet)
 
+        # Check for any bullets that have hit aliens -> if so, get rid of the bullet and the alien
+        collisions = pygame.sprite.groupcollide(
+            self.bullets, self.aliens, True, True
+        )
+
     def _create_fleet(self):
         """Create the fleet of aliens."""
         # Create an alien and keep adding aliens until there's no room left.
@@ -124,8 +129,22 @@ class AlienInvasion:
         pygame.display.flip() # Make the most recently drawn screen visible
 
     def _update_aliens(self):
-        """Update the positions of all aliens in the fleet"""
+        """Check if the fleet is at an edge, then update positions"""
+        self._check_fleet_edges()
         self.aliens.update()
+    
+    def _check_fleet_edges(self):
+        """Respond appropriately if any aliens have reached an edge"""
+        for alien in self.aliens.sprites():
+            if alien.check_edges():
+                self._change_fleet_direction()
+                break
+    
+    def _change_fleet_direction(self):
+        """Drop the entire fleet and change the fleets direction"""
+        for alien in self.aliens.sprites():
+            alien.rect.y += self.settings.fleet_drop_speed
+        self.settings.fleet_direction *= -1
 
 if __name__ == '__main__':
     # Make a game instance, and run the game.
