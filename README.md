@@ -1,8 +1,8 @@
 ﻿# Space Bug Invasion
 
- Well, it's basically a "Space Invaders" ripoff, but hey, it's a great Python exercise!
+ Well, it's basically a *Space Invaders* ripoff, but hey, it's a great Python exercise!
 
-# Overview
+## Overview
 
 Space Bug Invasion is an ongoing project aimed at recreating the classic "Space Invaders" game using Python and Pygame. This project serves as an excellent exercise for learning object-oriented programming (OOP) in Python.
 
@@ -13,20 +13,25 @@ Space Bug Invasion is an ongoing project aimed at recreating the classic "Space 
 - **Player Controls:** Smooth ship movement and bullet firing.
 - **Scoring System:** Track your score and high scores.
 - **Game States:** Manage game states, including game over and restart functionality.
-- 
-## Getting Started
-
-You can install Pygame using pip:
-
-```bash
-pip install pygame
-```
 
 ##  Running the Game
 
-1. Clone the repository to your local machine.
-2. Navigate to the project directory.
-3. Run the game using Python:
+To get started, you can fork this repository and clone it to your local machine:
+
+1. Fork the repository by clicking the "Fork" button at the top right of this page.
+2. Clone the repository to your local machine:
+   ```bash
+   git clone https://github.com/YOUR_USERNAME/Space-Bugged-Alien-Extermination.git
+ 3. Navigate to the project directory:
     ```bash
-    python alien_invasion.py
-    ```
+    cd Space-Bugged-Alien-Extermination
+ 4. Install the required dependencies (make sure you have Python and pip installed):
+    ```bash
+    pip install -r requirements.txt
+ 5. Run the game:
+     ```bash
+    python alien_invasion.py    
+
+Remember, the universe of *"Space Bugged: Alien Extermination!"* is ever-expanding, with new features and improvements being added regularly. 
+
+Enjoy the game and happy coding!
