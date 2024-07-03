@@ -1,4 +1,4 @@
-﻿# Space Bug Invasion
+﻿# Space-Bug Invasion
 
  Well, it's basically a *"Space Invaders" ripoff*, but hey, it's a great Python exercise!
 
@@ -21,10 +21,10 @@ To get started, you can fork this repository and clone it to your local machine:
 1. Fork the repository by clicking the "Fork" button at the top right of this page.
 2. Clone the repository to your local machine:
    ```bash
-   git clone https://github.com/YOUR_USERNAME/Space-Bugged-Alien-Extermination.git
+   git clone https://github.com/YOUR_USERNAME/SpaceBugInvasion.git
  3. Navigate to the project directory:
     ```bash
-    cd Space-Bugged-Alien-Extermination
+    cd SpaceBugInvasion
  4. Install the required dependencies (make sure you have Python and pip installed):
     ```bash
     pip install -r requirements.txt
