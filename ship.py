@@ -15,8 +15,8 @@ class Ship:
         # Scale the image to be 10 times smaller
         original_width = self.image.get_width()
         original_height = self.image.get_height()
-        new_width = original_width // 6
-        new_height = original_height // 6
+        new_width = original_width // 4
+        new_height = original_height // 4
         self.image = pygame.transform.scale(self.image, (new_width, new_height))
 
         # Get the rect of the scaled image

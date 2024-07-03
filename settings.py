@@ -31,7 +31,7 @@ class Settings:
 
         # How quickly the alien point values increase
         self.score_scale = 1.5
-
+        
         self.initialize_dynamic_settings()
 
     def initialize_dynamic_settings(self):
