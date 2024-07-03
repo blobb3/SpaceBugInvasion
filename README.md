@@ -4,7 +4,7 @@
 
 ## Overview
 
-Space Bug Invasion is an ongoing project aimed at recreating the classic "Space Invaders" game using Python and Pygame. This project serves as an excellent exercise for learning object-oriented programming (OOP) in Python.
+Space Bug Invasion is an ongoing project using Python and Pygame. It serves as an excellent exercise for learning object-oriented programming (OOP) in Python.
 
 ## Features
 
@@ -32,6 +32,6 @@ To get started, you can fork this repository and clone it to your local machine:
      ```bash
     python alien_invasion.py    
 
-Remember, the universe of *"Space Bugged: Alien Extermination!"* is ever-expanding, with new features and improvements being added regularly. 
+Of course, the universe of *"Space Bugged: Alien Extermination!"* is ever-expanding, with new features and improvements being added regularly. 
 
 Enjoy the game and happy coding!
