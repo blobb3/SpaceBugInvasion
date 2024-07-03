@@ -39,6 +39,7 @@ class AlienInvasion:
             self._check_events()
             self.ship.update() # position changes, when keyboard event
             self.bullets.update() # update position of bullets in while loop
+            self._update_aliens() # Update the position of aliens
             self._update_screen()  # Update the screen after checking events
             self.clock.tick(60) # framerate for game -> loop runs exactly 60 times per second
 
@@ -121,6 +122,10 @@ class AlienInvasion:
         self.aliens.draw(self.screen) # make aliens appear
 
         pygame.display.flip() # Make the most recently drawn screen visible
+
+    def _update_aliens(self):
+        """Update the positions of all aliens in the fleet"""
+        self.aliens.update()
 
 if __name__ == '__main__':
     # Make a game instance, and run the game.
