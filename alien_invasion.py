@@ -6,6 +6,7 @@ from bullet import  Bullet
 from alien import Alien
 from time import sleep
 from game_stats import GameStats
+from button import Button
 
 class AlienInvasion:
     """Overall class to manage game assets and behavior"""
@@ -36,8 +37,11 @@ class AlienInvasion:
 
         self._create_fleet()
 
-        # Start Alien Invasion in an active state
-        self.game_active = True
+        # Start Alien Invasion in an inactive state
+        self.game_active = False
+
+        # Make the play button
+        self.play_button = Button(self, "Play")
 
     # game is controlled through run_game()-method
     def run_game(self):
@@ -50,7 +54,7 @@ class AlienInvasion:
                 self.ship.update() # position changes, when keyboard event
                 self._update_bullets() # update position of bullets in while loop
                 self._update_aliens() # Update the position of aliens
-                
+
             self._update_screen()  # Update the screen after checking events
             self.clock.tick(60) # framerate for game -> loop runs exactly 60 times per second
 
@@ -143,6 +147,10 @@ class AlienInvasion:
             bullet.draw_bullet()
         self.ship.blitme() # Draw the ship on the screen on top of the background
         self.aliens.draw(self.screen) # make aliens appear
+
+        # Draw the play button if the game is inactive
+        if not self.game_active:
+            self.play_button.draw_button()
 
         pygame.display.flip() # Make the most recently drawn screen visible
 
