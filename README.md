@@ -1,6 +1,6 @@
 ﻿# Space Bug Invasion
 
- Well, it's basically a *Space Invaders* ripoff, but hey, it's a great Python exercise!
+ Well, it's basically a *"Space Invaders" ripoff*, but hey, it's a great Python exercise!
 
 ## Overview
 
