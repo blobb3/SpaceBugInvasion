@@ -17,8 +17,8 @@ class Alien(Sprite):
         # Scale the image to be the same size as the ship's image.
         original_width = self.image.get_width()
         original_height = self.image.get_height()
-        new_width = original_width // 6
-        new_height = original_height // 6
+        new_width = original_width // 8
+        new_height = original_height // 8
         self.image = pygame.transform.scale(self.image, (new_width, new_height))
 
         self.rect = self.image.get_rect()
