@@ -8,6 +8,7 @@ from time import sleep
 from game_stats import GameStats
 from button import Button
 from scoreboard import Scoreboard
+from pygame import mixer
 
 class AlienInvasion:
     """Overall class to manage game assets and behavior"""
@@ -15,6 +16,7 @@ class AlienInvasion:
     def __init__(self):
         """Initialize the game, and create game resources"""
         pygame.init()  # initializes background settings
+        pygame.mixer.init()  # initializes pygame mixer for sound
 
         # Controlling the frame rate => function that games run at the same speed on all systems
         self.clock = pygame.time.Clock()
@@ -44,6 +46,11 @@ class AlienInvasion:
 
         # Make the play button
         self.play_button = Button(self, "Play")
+
+        # Load and play background music
+        mixer.music.load('sounds/background/MOONSTAGE_Nobass_OGG.ogg')
+        mixer.music.set_volume(0.3)  # Set volume to 30%
+        mixer.music.play(-1)  # -1 plays the music in an infinite loop
 
     # game is controlled through run_game()-method
     def run_game(self):
