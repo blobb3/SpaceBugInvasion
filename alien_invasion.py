@@ -132,25 +132,29 @@ class AlienInvasion:
 
     def _create_fleet(self):
         """Create the fleet of aliens."""
+        alien_images = ['images/alien1.png', 'images/alien2.png', 'images/alien3.png']
         # Create an alien and keep adding aliens until there's no room left.
         # Spacing between aliens is one alien width and one alien height.
-        alien = Alien(self)
+        alien = Alien(self, alien_images[0])
         alien_width, alien_height = alien.rect.size
 
         current_x = alien_width
         current_y = alien_height  # Fixed y position for a single row
+        row_index = 0
         while current_y < (self.settings.screen_height - 3 * alien_height):
             while current_x < (self.settings.screen_width - alien_width):
-                self._create_alien(current_x, current_y)
+                image_path = alien_images[row_index % len(alien_images)]
+                self._create_alien(current_x, current_y, image_path)
                 current_x += 2 * alien_width  # Move to the next position horizontally
 
             # Finished a row; reset x value, and increment y value
             current_x = alien_width
             current_y += 2 * alien_height
+            row_index += 1
 
-    def _create_alien(self, x_position, y_position):
+    def _create_alien(self, x_position, y_position, image_path):
         """Create an alien and place it in the fleet."""
-        new_alien = Alien(self)
+        new_alien = Alien(self, image_path)
         new_alien.x = x_position
         new_alien.rect.x = x_position
         new_alien.rect.y = y_position
