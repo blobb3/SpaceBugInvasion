@@ -4,7 +4,7 @@
 
 ## Overview
 
-Space Bug Invasion is an ongoing project using Python and Pygame. It serves as an excellent exercise for learning object-oriented programming (OOP) in Python.
+Space Bug Invasion is an ongoing project using Python and Pygame. It serves as an excellent exercise for learning object-oriented programming (OOP) in Python. Oh, and by the way, all the fantastic visuals you see are courtesy of OpenGameArt [https://opengameart.org/]. Because even space bugs need some art to invade!
 
 ## Features
 
