@@ -12,8 +12,8 @@ class Explosion(pygame.sprite.Sprite):
         self.screen = ai_game.screen
         self.settings = ai_game.settings
 
-        # Load the explosion video and extract frames
-        video_path = os.path.join('sounds','explosion', 'explosion.gif')
+        # Load the explosion frames
+        video_path = os.path.join('sounds', 'explosion', 'explosion.gif')
         self.frames = self.extract_video_frames(video_path)
 
         self.image = self.frames[0]
@@ -22,6 +22,13 @@ class Explosion(pygame.sprite.Sprite):
 
         self.frame_index = 0
         self.animation_speed = 0.001  # Updated animation speed for faster playback
+
+        # Load the explosion sound
+        self.explosion_sound = pygame.mixer.Sound(os.path.join('sounds', 'explosion', 'explosion.wav'))
+        self.explosion_sound.set_volume(0.5)  # Adjust volume as needed
+
+        # Play the explosion sound
+        self.explosion_sound.play()
 
     def extract_video_frames(self, video_path):
         """Extract frames from a video file with transparency."""
