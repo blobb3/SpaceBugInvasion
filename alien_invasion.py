@@ -56,6 +56,9 @@ class AlienInvasion:
         self.start_sound = pygame.mixer.Sound('sounds/commander/mission_start.wav')
         self.start_sound.set_volume(0.5)
 
+        self.shoot_sound = pygame.mixer.Sound('sounds/shooting/alienshoot1.wav')
+        self.shoot_sound.set_volume(0.3)
+
         # Load and play background music
         mixer.music.load('sounds/background/MOONSTAGE_Nobass_OGG.ogg')
         mixer.music.set_volume(0.3)  # Set volume to 30%
@@ -100,7 +103,8 @@ class AlienInvasion:
         elif event.key == pygame.K_q:
             sys.exit()
         elif event.key == pygame.K_SPACE:
-            self._fire_bullet()            
+            self._fire_bullet()   
+            self.shoot_sound.play() # shoot sound when firing a bullet   
 
     def _check_keyup_events(self, event):
         """Respond to key releases."""
