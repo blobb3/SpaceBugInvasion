@@ -9,8 +9,10 @@ from game_stats import GameStats
 from button import Button
 from scoreboard import Scoreboard
 from pygame import mixer
+from explosion import Explosion
 import cv2
 import numpy as np
+
 
 class AlienInvasion:
     """Overall class to manage game assets and behavior"""
@@ -40,6 +42,7 @@ class AlienInvasion:
         # Create Group that holds bullets and aliens
         self.bullets = pygame.sprite.Group()
         self.aliens = pygame.sprite.Group()
+        self.explosions = pygame.sprite.Group()
 
         self._create_fleet()
 
@@ -63,11 +66,13 @@ class AlienInvasion:
         while True: 
             #create instance of the classes ship, bullets, clock
             self._check_events()
+            dt = self.clock.tick(60) / 5000 
 
             if self.game_active: 
                 self.ship.update() # position changes, when keyboard event
                 self._update_bullets() # update position of bullets in while loop
                 self._update_aliens() # Update the position of aliens
+                self.explosions.update(dt, self.settings.fleet_direction) #Update explosion animations
 
             self._update_screen()  # Update the screen after checking events
             self.clock.tick(60) # framerate for game -> loop runs exactly 60 times per second
@@ -123,52 +128,27 @@ class AlienInvasion:
     
     def _check_bullet_alien_collisions(self):
         """Respond to bullet-alien collisions"""
-        #Remove any bullets and aliens that have collided
+        # Remove any bullets and aliens that have collided
         collisions = pygame.sprite.groupcollide(
             self.bullets, self.aliens, True, True
         )
         if collisions:
             for aliens in collisions.values():
                 for alien in aliens:
-                    self._play_explosion(alien.rect.center)  # Play explosion at the alien's position
+                    explosion = Explosion(self, alien.rect.center)
+                    self.explosions.add(explosion)
                 self.stats.score += self.settings.alien_points * len(aliens)
             self.sb.prep_score()
             self.sb.check_high_score()
 
         if not self.aliens:
-            #Destroy existing bullets and create new fleet
+            # Destroy existing bullets and create new fleet
             self.bullets.empty()
             self._create_fleet()
 
             # Increase Level
             self.stats.level += 1
             self.sb.prep_level()
-
-    def _play_explosion(self, position):
-        """Play explosion video at the given position"""
-        explosion = cv2.VideoCapture('images/explosion.avi')
-        
-        while explosion.isOpened():
-            ret, frame = explosion.read()
-            if not ret:
-                break
-            frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-            frame = cv2.resize(frame, (64, 64))  # Resize to fit in the game
-            
-            # Convert frame to pygame surface
-            frame_surface = pygame.surfarray.make_surface(frame)
-            
-            # Get the rectangle for positioning
-            rect = frame_surface.get_rect(center=position)
-            
-            # Blit the frame onto the screen
-            self.screen.blit(frame_surface, rect)
-            pygame.display.flip()
-            
-            # Control the frame rate of the video
-            self.clock.tick(30)
-
-        explosion.release()
 
     def _create_fleet(self):
         """Create the fleet of aliens."""
@@ -202,11 +182,12 @@ class AlienInvasion:
 
     def _update_screen(self):
         """Update images on the screen, and flip to the new screen."""
-        self.screen.fill(self.settings.bg_color) # Redraw the screen during each pass through the loop 
+        self.screen.fill(self.settings.bg_color)  # Redraw the screen during each pass through the loop 
         for bullet in self.bullets.sprites():
             bullet.draw_bullet()
-        self.ship.blitme() # Draw the ship on the screen on top of the background
-        self.aliens.draw(self.screen) # make aliens appear
+        self.ship.blitme()  # Draw the ship on the screen on top of the background
+        self.aliens.draw(self.screen)  # Make aliens appear
+        self.explosions.draw(self.screen)  # Draw explosions
 
         # Draw the score information
         self.sb.show_score()
@@ -215,7 +196,7 @@ class AlienInvasion:
         if not self.game_active:
             self.play_button.draw_button()
 
-        pygame.display.flip() # Make the most recently drawn screen visible
+        pygame.display.flip()  # Make the most recently drawn screen visible
 
     def _update_aliens(self):
         """Check if the fleet is at an edge, then update positions"""
