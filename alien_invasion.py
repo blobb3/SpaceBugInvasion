@@ -13,7 +13,6 @@ from explosion import Explosion
 import cv2
 import numpy as np
 
-
 class AlienInvasion:
     """Overall class to manage game assets and behavior"""
 
