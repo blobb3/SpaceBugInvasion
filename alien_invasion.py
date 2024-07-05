@@ -56,6 +56,9 @@ class AlienInvasion:
         self.start_sound = pygame.mixer.Sound('sounds/commander/mission_start.wav')
         self.start_sound.set_volume(0.5)
 
+        self.new_mission_sound = pygame.mixer.Sound('sounds/commander/new_mission.wav')
+        self.new_mission_sound.set_volume(0.5)
+
         self.shoot_sound = pygame.mixer.Sound('sounds/shooting/alienshoot1.wav')
         self.shoot_sound.set_volume(0.3)
 
@@ -257,12 +260,15 @@ class AlienInvasion:
                 break
     
     def _check_play_button(self, mouse_pos):
-        """Start a new game when the palyer clicks play"""
+        """Start a new game when the player clicks play"""
         button_clicked = self.play_button.rect.collidepoint(mouse_pos)
         if button_clicked and not self.game_active:
 
             # Play start sound
-            self.start_sound.play()
+            if self.stats.games_played == 0:
+                self.start_sound.play()
+            else:
+                self.new_mission_sound.play()
 
             # Pause briefly to let the sound play (adjust as needed)
             pygame.time.delay(500)  # 500 milliseconds delay (0.5 seconds)
@@ -270,7 +276,7 @@ class AlienInvasion:
             # Start background music
             mixer.music.play(-1)  # -1 plays the music in an infinite loop
 
-            # reset the game settings
+            # Reset the game settings
             self.settings.initialize_dynamic_settings()
 
             # Reset the game statistics
@@ -290,6 +296,10 @@ class AlienInvasion:
 
             # Hide the mouse cursor
             pygame.mouse.set_visible(False)
+
+            # Increment games_played
+            self.stats.games_played += 1
+
 
 if __name__ == '__main__':
     # Make a game instance, and run the game.

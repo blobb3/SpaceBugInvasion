@@ -9,6 +9,9 @@ class GameStats:
         # High score should never be reset
         self.high_score = 0
 
+        # Initialize games_played to 0
+        self.games_played = 0
+
     def reset_stats(self):
         """Initialize statistics that can change during the game"""
         self.ships_left = self.settings.ship_limit
