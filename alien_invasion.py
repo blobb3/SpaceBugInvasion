@@ -9,6 +9,8 @@ from game_stats import GameStats
 from button import Button
 from scoreboard import Scoreboard
 from pygame import mixer
+import cv2
+import numpy as np
 
 class AlienInvasion:
     """Overall class to manage game assets and behavior"""
@@ -47,10 +49,13 @@ class AlienInvasion:
         # Make the play button
         self.play_button = Button(self, "Play")
 
+         # Load sounds
+        self.start_sound = pygame.mixer.Sound('sounds/commander/mission_start.wav')
+        self.start_sound.set_volume(0.5)
+
         # Load and play background music
         mixer.music.load('sounds/background/MOONSTAGE_Nobass_OGG.ogg')
         mixer.music.set_volume(0.3)  # Set volume to 30%
-        mixer.music.play(-1)  # -1 plays the music in an infinite loop
 
     # game is controlled through run_game()-method
     def run_game(self):
@@ -124,6 +129,8 @@ class AlienInvasion:
         )
         if collisions:
             for aliens in collisions.values():
+                for alien in aliens:
+                    self._play_explosion(alien.rect.center)  # Play explosion at the alien's position
                 self.stats.score += self.settings.alien_points * len(aliens)
             self.sb.prep_score()
             self.sb.check_high_score()
@@ -136,6 +143,32 @@ class AlienInvasion:
             # Increase Level
             self.stats.level += 1
             self.sb.prep_level()
+
+    def _play_explosion(self, position):
+        """Play explosion video at the given position"""
+        explosion = cv2.VideoCapture('images/explosion.avi')
+        
+        while explosion.isOpened():
+            ret, frame = explosion.read()
+            if not ret:
+                break
+            frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            frame = cv2.resize(frame, (64, 64))  # Resize to fit in the game
+            
+            # Convert frame to pygame surface
+            frame_surface = pygame.surfarray.make_surface(frame)
+            
+            # Get the rectangle for positioning
+            rect = frame_surface.get_rect(center=position)
+            
+            # Blit the frame onto the screen
+            self.screen.blit(frame_surface, rect)
+            pygame.display.flip()
+            
+            # Control the frame rate of the video
+            self.clock.tick(30)
+
+        explosion.release()
 
     def _create_fleet(self):
         """Create the fleet of aliens."""
@@ -242,6 +275,16 @@ class AlienInvasion:
         """Start a new game when the palyer clicks play"""
         button_clicked = self.play_button.rect.collidepoint(mouse_pos)
         if button_clicked and not self.game_active:
+
+            # Play start sound
+            self.start_sound.play()
+
+            # Pause briefly to let the sound play (adjust as needed)
+            pygame.time.delay(500)  # 500 milliseconds delay (0.5 seconds)
+
+            # Start background music
+            mixer.music.play(-1)  # -1 plays the music in an infinite loop
+
             # reset the game settings
             self.settings.initialize_dynamic_settings()
 
