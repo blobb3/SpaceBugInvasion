@@ -1,3 +1,4 @@
+import random
 import sys
 import pygame
 from settings import Settings
@@ -83,37 +84,50 @@ class AlienInvasion:
             self.clock.tick(60) # framerate for game -> loop runs exactly 60 times per second
 
     def _check_events(self):
-        """Respond to keypresses and mouse events."""
+        """Respond to key presses and mouse events."""
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 sys.exit()
             elif event.type == pygame.KEYDOWN:
-                self._check_keydown_events(event)
+                self._handle_keydown_events(event)
             elif event.type == pygame.KEYUP:
-                self._check_keyup_events(event)
-            # start the game when the player clicks play
+                self._handle_keyup_events(event)
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                mouse_pos = pygame.mouse.get_pos()
-                self._check_play_button(mouse_pos)
+                self._handle_mouse_events(pygame.mouse.get_pos())
 
-    def _check_keydown_events(self, event):
-        """Respond to keypresses."""
+    def _handle_keydown_events(self, event):
+        """Handle keydown events separately for clarity and better management."""
         if event.key == pygame.K_RIGHT:
             self.ship.moving_right = True
         elif event.key == pygame.K_LEFT:
             self.ship.moving_left = True
+        elif event.key == pygame.K_SPACE:
+            self._fire_bullet()
+            self.shoot_sound.play()
         elif event.key == pygame.K_q:
             sys.exit()
-        elif event.key == pygame.K_SPACE:
-            self._fire_bullet()   
-            self.shoot_sound.play() # shoot sound when firing a bullet   
 
-    def _check_keyup_events(self, event):
-        """Respond to key releases."""
+    def _handle_keyup_events(self, event):
+        """Handle keyup events separately to manage ship's movement."""
         if event.key == pygame.K_RIGHT:
             self.ship.moving_right = False
         elif event.key == pygame.K_LEFT:
             self.ship.moving_left = False
+
+    def _handle_mouse_events(self, mouse_pos):
+        """Handle mouse events, check if the play button was clicked."""
+        if self.play_button.rect.collidepoint(mouse_pos) and not self.game_active:
+            self._start_game()
+
+    def _start_game(self):
+        """Actions to start the game, including resetting stats and settings."""
+        self.game_active = True
+        self.stats.reset_stats()
+        self.settings.initialize_dynamic_settings()
+        self.sb.prep_score()
+        pygame.mouse.set_visible(False)
+        mixer.music.play(-1)  # Start or continue background music
+
 
     def _fire_bullet(self):
         """Create a new bullet and add it to the bullets group."""
@@ -133,58 +147,78 @@ class AlienInvasion:
         self._check_bullet_alien_collisions()
     
     def _check_bullet_alien_collisions(self):
-        """Respond to bullet-alien collisions"""
-        # Remove any bullets and aliens that have collided
-        collisions = pygame.sprite.groupcollide(
-            self.bullets, self.aliens, True, True
-        )
-        if collisions:
-            for aliens in collisions.values():
-                for alien in aliens:
+        """Respond to bullet-alien collisions."""
+        # Check for any bullets that have hit aliens.
+        # True makes the bullet disappear upon collision, False keeps the alien active.
+        collisions = pygame.sprite.groupcollide(self.bullets, self.aliens, True, False)
+
+        # Process collisions
+        for bullet in collisions:
+            for alien in collisions[bullet]:
+                # Call take_hit, which decrements an alien's life or destroys it
+                if alien.take_hit():
+                    # Create an explosion effect at the alien's center
                     explosion = Explosion(self, alien.rect.center)
                     self.explosions.add(explosion)
-                self.stats.score += self.settings.alien_points * len(aliens)
-            self.sb.prep_score()
-            self.sb.check_high_score()
+                    # Remove the alien from the group
+                    self.aliens.remove(alien)
+                    # Update the score
+                    self.stats.score += self.settings.alien_points
+                    self.sb.prep_score()
+                    self.sb.check_high_score()
 
+        # If all aliens are destroyed, reset the level
         if not self.aliens:
-            # Destroy existing bullets and create new fleet
-            self.bullets.empty()
-            self._create_fleet()
+            self._start_new_level()
 
-            # Increase Level
-            self.stats.level += 1
-            self.sb.prep_level()
+    def _start_new_level(self):
+        """Handles the logic to start a new level."""
+        # Destroy existing bullets, reset bullet group
+        self.bullets.empty()
+        # Create a new fleet of aliens
+        self._create_fleet()
+        # Increase the level count
+        self.stats.level += 1
+        self.sb.prep_level()
+        # Possibly increase game difficulty here
+        self.settings.increase_speed()
 
     def _create_fleet(self):
-        """Create the fleet of aliens."""
-        alien_images = ['images/alien1.png', 'images/alien2.png', 'images/alien3.png']
-        # Create an alien and keep adding aliens until there's no room left.
-        # Spacing between aliens is one alien width and one alien height.
-        alien = Alien(self, alien_images[0])
+        """Create a fleet of aliens."""
+        alien = Alien(self, 'images/alien1.png', 1)  # Temporary alien for size measurement
         alien_width, alien_height = alien.rect.size
+        available_space_x = self.settings.screen_width - (2 * alien_width)
+        number_aliens_x = available_space_x // (2 * alien_width)
 
-        current_x = alien_width
-        current_y = alien_height  # Fixed y position for a single row
-        row_index = 0
-        while current_y < (self.settings.screen_height - 3 * alien_height):
-            while current_x < (self.settings.screen_width - alien_width):
-                image_path = alien_images[row_index % len(alien_images)]
-                self._create_alien(current_x, current_y, image_path)
-                current_x += 2 * alien_width  # Move to the next position horizontally
+        available_space_y = self.settings.screen_height - (3 * alien_height) - self.ship.rect.height
+        number_rows = available_space_y // (2 * alien_height)
 
-            # Finished a row; reset x value, and increment y value
-            current_x = alien_width
-            current_y += 2 * alien_height
-            row_index += 1
+        alien_images = {
+            'images/alien1.png': 1,
+            'images/alien2.png': 2,
+            'images/alien3.png': 3,
+            'images/alien4.png': 4,
+            'images/alien5.png': 5
+        }
 
-    def _create_alien(self, x_position, y_position, image_path):
+        # Determine available alien images based on the current level
+        available_images = {img: hp for img, hp in alien_images.items()
+                            if hp <= 3 or (self.stats.level >= 3 and hp == 4) or (self.stats.level >= 4 and hp == 5)}
+
+        # Create the fleet with the available alien images
+        for row_number in range(number_rows):
+            for alien_number in range(number_aliens_x):
+                image_path, hit_points = random.choice(list(available_images.items()))
+                self._create_alien(alien_number, row_number, image_path, hit_points)
+
+    def _create_alien(self, alien_number, row_number, image_path, hit_points):
         """Create an alien and place it in the fleet."""
-        new_alien = Alien(self, image_path)
-        new_alien.x = x_position
-        new_alien.rect.x = x_position
-        new_alien.rect.y = y_position
-        self.aliens.add(new_alien)
+        alien = Alien(self, image_path, hit_points)
+        alien_width, alien_height = alien.rect.size
+        alien.x = alien_width + 2 * alien_width * alien_number
+        alien.rect.x = alien.x
+        alien.rect.y = alien_height + 2 * alien_height * row_number
+        self.aliens.add(alien)
 
     def _update_screen(self):
         """Update images on the screen, and flip to the new screen."""

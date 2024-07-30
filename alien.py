@@ -5,16 +5,25 @@ from pygame.sprite import Sprite
 class Alien(Sprite):
     """A class to represent a single alien in the fleet."""
 
-    def __init__(self, ai_game, image_path):
+    def __init__(self, ai_game, image_path, hit_points):
         """Initialize the alien and set its starting position."""
         super().__init__()
         self.screen = ai_game.screen
         self.settings = ai_game.settings
 
-        # Load the alien image and set its rect attribute.
+        # Load the alien image and set its rect attribute
         self.image = pygame.image.load(image_path)
+        self.rect = self.image.get_rect()
+        self.rect.x = 0
+        self.rect.y = 0
 
-        # Scale the image to be the same size as the ship's image.
+        # Save the exact horizontal position of the alien
+        self.x = float(self.rect.x)
+
+         # Set the life points based on the image path
+        self.hit_points = hit_points
+
+        # Scale the image to be the same size as the ship's image
         original_width = self.image.get_width()
         original_height = self.image.get_height()
         new_width = original_width // 8
@@ -23,12 +32,17 @@ class Alien(Sprite):
 
         self.rect = self.image.get_rect()
 
-        # Start each new alien at the top left of the screen.
+        # Start each new alien at the top left of the screen
         self.rect.x = 0
         self.rect.y = 0
 
-        # Store the alien's exact horizontal position.
+        # Store the alien's exact horizontal position
         self.x = float(self.rect.x)
+
+    def take_hit(self):
+        """Reduziere die Lebenspunkte und prüfe, ob das Alien zerstört ist."""
+        self.hit_points -= 1
+        return self.hit_points <= 0
 
     def check_edges(self):
         """Return True if alien is at edge of screen"""
