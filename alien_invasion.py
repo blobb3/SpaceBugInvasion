@@ -3,15 +3,10 @@ import sys
 import pygame
 from settings import Settings
 from ship import Ship
-from bullet import Bullet
-from alien import Alien
 from game_stats import GameStats
 from button import Button
 from scoreboard import Scoreboard
 from pygame import mixer
-from explosion import Explosion
-import cv2
-import numpy as np
 from event_handler import EventHandler
 from game_updates import GameUpdates
 from fleet import Fleet
@@ -22,57 +17,53 @@ class AlienInvasion:
 
     def __init__(self):
         """Initialize the game, and create game resources"""
+        self._initialize_pygame()
+        self._initialize_settings()
+        self._initialize_game_elements()
+        self._initialize_sounds()
+        self._initialize_music()
+        
+    def _initialize_pygame(self):
+        """Initialize pygame modules"""
         pygame.init()  # initializes background settings
         pygame.mixer.init()  # initializes pygame mixer for sound
 
-        # Controlling the frame rate => function that games run at the same speed on all systems
+    def _initialize_settings(self):
+        """Initialize game settings"""
         self.clock = pygame.time.Clock()
-
-        # Create instances
         self.settings = Settings()
-
-        self.screen = pygame.display.set_mode(
-            (self.settings.screen_width, self.settings.screen_height))
+        self.screen = pygame.display.set_mode((self.settings.screen_width, self.settings.screen_height))
         pygame.display.set_caption("Space Bugged: Alien Extermination!")
-
-        # Create an instance to store game statistics, and create a scoreboard
+    
+    def _initialize_game_elements(self):
+        """Initialize game elements such as ship, bullets, aliens, etc."""
         self.stats = GameStats(self)
         self.sb = Scoreboard(self)
-
-        # Create instance of alien ship
         self.ship = Ship(self)
-
-        # Create Group that holds bullets and aliens
         self.bullets = pygame.sprite.Group()
         self.aliens = pygame.sprite.Group()
         self.explosions = pygame.sprite.Group()
-
         self.fleet = Fleet(self)
         self.eventhandler = EventHandler(self)
         self.gameupdates = GameUpdates(self)
         self.gamemanagement = GameManagement(self)
-
+        self.play_button = Button(self, "Play")
         self.fleet.create_fleet()
-
-        # Start Alien Invasion in an inactive state
         self.game_active = False
 
-        # Make the play button
-        self.play_button = Button(self, "Play")
-
-        # Load sounds
+    def _initialize_sounds(self):
+        """Load sound effects"""
         self.start_sound = pygame.mixer.Sound('sounds/commander/mission_start.wav')
         self.start_sound.set_volume(0.5)
-
         self.new_mission_sound = pygame.mixer.Sound('sounds/commander/new_mission.wav')
         self.new_mission_sound.set_volume(0.5)
-
         self.shoot_sound = pygame.mixer.Sound('sounds/shooting/alienshoot1.wav')
         self.shoot_sound.set_volume(0.3)
 
-        # Load and play background music
+    def _initialize_music(self):
+        """Load background music"""
         mixer.music.load('sounds/background/MOONSTAGE_Nobass_OGG.ogg')
-        mixer.music.set_volume(0.3)  # Set volume to 30%
+        mixer.music.set_volume(0.3)
 
     # game is controlled through run_game()-method
     def run_game(self):
