@@ -5,7 +5,8 @@ class Settings:
         """Initialize the game's static settings"""
         # Screen settings
         self.screen_width = 1200
-        self.screen_height = 600
+        self.screen_height = 650
+        self.header_height = 80
         self.bg_color = (15, 15, 70)
 
         # Ship settings
