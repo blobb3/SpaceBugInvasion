@@ -23,6 +23,7 @@ class Settings:
         # Alien settings
         self.alien_speed = 1.0
         self.fleet_drop_speed = 10
+        self.alien_max_size = (60, 60) # maximum width and height for aliens
 
         # Scoring settings
         self.alien_points = 50

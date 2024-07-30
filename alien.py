@@ -19,7 +19,7 @@ class Alien(Sprite):
         self.hit_points = hit_points
         self.max_hit_points = hit_points
 
-        # Scale the image to be the same size as the ship's image
+        # Scale the image to fit within the maximum size without distortion
         self.scale_image()
 
         # Initialize position
@@ -28,11 +28,16 @@ class Alien(Sprite):
         self.x = float(self.rect.x)  # Store the alien's exact horizontal position
 
     def scale_image(self):
-        """Scales the alien image to an appropriate size."""
-        original_width = self.original_image.get_width()
-        original_height = self.original_image.get_height()
-        new_width = original_width // 8
-        new_height = original_height // 8
+        """Scale the alien image to fit within the maximum size without distortion."""
+        max_width, max_height = self.settings.alien_max_size
+        original_width, original_height = self.original_image.get_width(), self.original_image.get_height()
+        
+        # Calculate scaling factor while maintaining the aspect ratio
+        scale_factor = min(max_width / original_width, max_height / original_height)
+        new_width = int(original_width * scale_factor)
+        new_height = int(original_height * scale_factor)
+        
+        # Scale the image
         self.image = pygame.transform.scale(self.original_image, (new_width, new_height))
         self.rect = self.image.get_rect()
 
@@ -67,5 +72,4 @@ class Alien(Sprite):
             health_bar_rect.centerx = self.rect.centerx
             health_bar_rect.top = self.rect.top - 10  
             pygame.draw.rect(self.screen, (255, 0, 0), fill_rect.move(health_bar_rect.topleft))
-            pygame.draw.rect(self.screen, (255, 255, 255), health_bar_rect, 1) 
-
+            pygame.draw.rect(self.screen, (255, 255, 255), health_bar_rect, 1)

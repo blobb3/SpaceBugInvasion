@@ -22,19 +22,19 @@ class Scoreboard:
     def prep_score(self):
         """Turn the score into a rendered image."""
         score_str = "{:,}".format(self.stats.score)
-        self.score_image = self.font.render(score_str, True, self.text_color, self.settings.bg_color)
+        self.score_image = self.font.render(score_str, True, self.text_color)
         self.score_image_rect = self.score_image.get_rect()
 
     def prep_high_score(self):
         """Turn the high score into a rendered image."""
         high_score_str = "{:,}".format(self.stats.high_score)
-        self.high_score_image = self.font.render(high_score_str, True, self.text_color, self.settings.bg_color)
+        self.high_score_image = self.font.render(high_score_str, True, self.text_color)
         self.high_score_rect = self.high_score_image.get_rect()
 
     def prep_level(self):
         """Turn the level into a rendered image"""
         level_str = str(self.stats.level)
-        self.level_image = self.font.render(level_str, True, self.text_color, self.settings.bg_color)
+        self.level_image = self.font.render(level_str, True, self.text_color)
         self.level_rect = self.level_image.get_rect()
 
     def prep_ships(self):
@@ -56,14 +56,13 @@ class Scoreboard:
 
     def show_score(self):
         """Draw scores, level, and ships to the screen."""
-        # Draw background for the header 
-        
-        header_color = (30, 30, 30)  
+        # Draw background for the header
+        header_color = (30, 30, 30)
         header_rect = pygame.Rect(0, 0, self.screen_rect.width, self.settings.header_height)
         pygame.draw.rect(self.screen, header_color, header_rect)
 
         # Draw border around the header
-        border_color = (255, 210, 0)  
+        border_color = (255, 210, 0)
         border_thickness = 4
         pygame.draw.rect(self.screen, border_color, header_rect, border_thickness)
 

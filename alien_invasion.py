@@ -52,19 +52,36 @@ class AlienInvasion:
         # Make the play button
         self.play_button = Button(self, "Play")
 
-         # Load sounds
-        self.start_sound = pygame.mixer.Sound('sounds/commander/mission_start.wav')
-        self.start_sound.set_volume(0.5)
+        # Load sounds
+        try:
+            self.start_sound = pygame.mixer.Sound('sounds/commander/mission_start.wav')
+            self.start_sound.set_volume(0.5)
+            print("Start sound loaded successfully.")
+        except pygame.error as e:
+            print(f"Failed to load start sound: {e}")
 
-        self.new_mission_sound = pygame.mixer.Sound('sounds/commander/new_mission.wav')
-        self.new_mission_sound.set_volume(0.5)
+        try:
+            self.new_mission_sound = pygame.mixer.Sound('sounds/commander/new_mission.wav')
+            self.new_mission_sound.set_volume(0.5)
+            print("New mission sound loaded successfully.")
+        except pygame.error as e:
+            print(f"Failed to load new mission sound: {e}")
 
-        self.shoot_sound = pygame.mixer.Sound('sounds/shooting/alienshoot1.wav')
-        self.shoot_sound.set_volume(0.3)
+        try:
+            self.shoot_sound = pygame.mixer.Sound('sounds/shooting/alienshoot1.wav')
+            self.shoot_sound.set_volume(0.3)
+            print("Shoot sound loaded successfully.")
+        except pygame.error as e:
+            print(f"Failed to load shoot sound: {e}")
 
         # Load and play background music
-        mixer.music.load('sounds/background/MOONSTAGE_Nobass_OGG.ogg')
-        mixer.music.set_volume(0.3)  # Set volume to 30%
+        try:
+            mixer.music.load('sounds/background/MOONSTAGE_Nobass_OGG.ogg')
+            mixer.music.set_volume(0.3)  # Set volume to 30%
+            print("Background music loaded successfully.")
+        except pygame.error as e:
+            print(f"Failed to load background music: {e}")
+
 
     # game is controlled through run_game()-method
     def run_game(self):
@@ -127,6 +144,17 @@ class AlienInvasion:
         self.sb.prep_score()
         pygame.mouse.set_visible(False)
         mixer.music.play(-1)  # Start or continue background music
+
+        # Play start sound
+        if self.stats.games_played == 0:
+            print("Playing start sound.")
+            self.start_sound.play()
+        else:
+            print("Playing new mission sound.")
+            self.new_mission_sound.play()
+
+        # Pause briefly to let the sound play (adjust as needed)
+        pygame.time.delay(1000)  # 1000 milliseconds delay (1 second)
 
 
     def _fire_bullet(self):
@@ -307,7 +335,7 @@ class AlienInvasion:
                 self.new_mission_sound.play()
 
             # Pause briefly to let the sound play (adjust as needed)
-            pygame.time.delay(500)  # 500 milliseconds delay (0.5 seconds)
+            pygame.time.delay(1000)  # 500 milliseconds delay (0.5 seconds)
 
             # Start background music
             mixer.music.play(-1)  # -1 plays the music in an infinite loop
