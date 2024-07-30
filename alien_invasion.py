@@ -5,7 +5,6 @@ from settings import Settings
 from ship import Ship
 from bullet import Bullet
 from alien import Alien
-from time import sleep
 from game_stats import GameStats
 from button import Button
 from scoreboard import Scoreboard
@@ -89,7 +88,7 @@ class AlienInvasion:
                 self.gameupdates.update_aliens()  # Update the position of aliens
                 self.explosions.update(dt, self.settings.fleet_direction)  # Update explosion animations
 
-            self._update_screen()  # Update the screen after checking events
+            self.gameupdates.update_screen()  # Update the screen after checking events
             self.clock.tick(60)  # framerate for game -> loop runs exactly 60 times per second
 
     def _start_game(self):
@@ -112,40 +111,6 @@ class AlienInvasion:
 
         # Pause briefly to let the sound play (adjust as needed)
         pygame.time.delay(1000)  # 1000 milliseconds delay (1 second)
-
-    def _fire_bullet(self):
-        """Create a new bullet and add it to the bullets group."""
-        if len(self.bullets) < self.settings.bullets_allowed:
-            new_bullet = Bullet(self)
-            self.bullets.add(new_bullet)
-
-    def _update_screen(self):
-        """Update images on the screen, and flip to the new screen."""
-        self.screen.fill(self.settings.bg_color)  # Redraw the screen during each pass through the loop 
-        for bullet in self.bullets.sprites():
-            bullet.draw_bullet()
-        for alien in self.aliens.sprites():
-            alien.draw() 
-        self.ship.blitme()  # Draw the ship on the screen on top of the background
-        self.aliens.draw(self.screen)  # Make aliens appear
-        self.explosions.draw(self.screen)  # Draw explosions
-
-        # Draw the score information
-        self.sb.show_score()
-
-        # Draw the play button if the game is inactive
-        if not self.game_active:
-            self.play_button.draw_button()
-
-        pygame.display.flip()  # Make the most recently drawn screen visible
-
-    def _check_aliens_bottom(self):
-        """Check if any aliens have reached the bottom of the screen"""
-        for alien in self.aliens.sprites():
-            if alien.rect.bottom >= self.settings.screen_height:
-                # Treat this the same as if the ship got hit
-                self.gamemanagement.ship_hit()
-                break
 
     def _check_play_button(self, mouse_pos):
         """Start a new game when the player clicks play"""

@@ -1,6 +1,7 @@
 import pygame
 from time import sleep
 from explosion import Explosion
+from bullet import Bullet
 
 class GameManagement:
     def __init__(self, ai_game):
@@ -62,3 +63,17 @@ class GameManagement:
         self.ai_game.sb.prep_level()
         # Possibly increase game difficulty here
         self.ai_game.settings.increase_speed()
+
+    def fire_bullet(self):
+        """Create a new bullet and add it to the bullets group."""
+        if len(self.ai_game.bullets) < self.ai_game.settings.bullets_allowed:
+            new_bullet = Bullet(self.ai_game)
+            self.ai_game.bullets.add(new_bullet)
+
+    def check_aliens_bottom(self):
+        """Check if any aliens have reached the bottom of the screen"""
+        for alien in self.ai_game.aliens.sprites():
+            if alien.rect.bottom >= self.ai_game.settings.screen_height:
+                # Treat this the same as if the ship got hit
+                self.ship_hit()
+                break

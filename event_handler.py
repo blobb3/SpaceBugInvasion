@@ -2,10 +2,7 @@ import sys
 import pygame
 
 class EventHandler:
-    """Class to handle game events like key presses and mouse events."""
-
     def __init__(self, ai_game):
-        """Initialize the event handler with a reference to the game instance."""
         self.ai_game = ai_game
 
     def check_events(self):
@@ -27,7 +24,7 @@ class EventHandler:
         elif event.key == pygame.K_LEFT:
             self.ai_game.ship.moving_left = True
         elif event.key == pygame.K_SPACE:
-            self.ai_game._fire_bullet()
+            self.ai_game.gamemanagement.fire_bullet()
             self.ai_game.shoot_sound.play()
         elif event.key == pygame.K_q:
             sys.exit()
