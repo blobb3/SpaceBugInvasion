@@ -10,7 +10,7 @@ class Settings:
         self.bg_color = (15, 15, 70)
 
         # Ship settings
-        self.ship_speed = 1.5 # position is adjusted by 1.5 pixels
+        self.ship_speed = 8 # position is adjusted by 8 pixels
         self.ship_limit = 3
 
         # Bullet settings
