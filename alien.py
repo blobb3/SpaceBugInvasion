@@ -1,7 +1,6 @@
 import pygame
 from pygame.sprite import Sprite
 
-
 class Alien(Sprite):
     """A class to represent a single alien in the fleet."""
 
@@ -13,43 +12,60 @@ class Alien(Sprite):
 
         # Load the alien image and set its rect attribute
         self.image = pygame.image.load(image_path)
+        self.original_image = self.image  # Keep the original image to scale
         self.rect = self.image.get_rect()
-        self.rect.x = 0
-        self.rect.y = 0
 
-        # Save the exact horizontal position of the alien
-        self.x = float(self.rect.x)
-
-         # Set the life points based on the image path
+        # Set the life points based on the image path
         self.hit_points = hit_points
+        self.max_hit_points = hit_points
 
         # Scale the image to be the same size as the ship's image
-        original_width = self.image.get_width()
-        original_height = self.image.get_height()
-        new_width = original_width // 8
-        new_height = original_height // 8
-        self.image = pygame.transform.scale(self.image, (new_width, new_height))
+        self.scale_image()
 
-        self.rect = self.image.get_rect()
-
-        # Start each new alien at the top left of the screen
+        # Initialize position
         self.rect.x = 0
         self.rect.y = 0
+        self.x = float(self.rect.x)  # Store the alien's exact horizontal position
 
-        # Store the alien's exact horizontal position
-        self.x = float(self.rect.x)
+    def scale_image(self):
+        """Scales the alien image to an appropriate size."""
+        original_width = self.original_image.get_width()
+        original_height = self.original_image.get_height()
+        new_width = original_width // 8
+        new_height = original_height // 8
+        self.image = pygame.transform.scale(self.original_image, (new_width, new_height))
+        self.rect = self.image.get_rect()
 
     def take_hit(self):
-        """Reduziere die Lebenspunkte und prüfe, ob das Alien zerstört ist."""
+        """Reduce hit points and check if the alien is destroyed."""
         self.hit_points -= 1
         return self.hit_points <= 0
 
     def check_edges(self):
-        """Return True if alien is at edge of screen"""
+        """Return True if alien is at edge of screen."""
         screen_rect = self.screen.get_rect()
         return (self.rect.right >= screen_rect.right) or (self.rect.left <= 0)
-    
+
     def update(self):
-        """Move the alien to the right or left"""
+        """Move the alien to the right or left."""
         self.x += self.settings.alien_speed * self.settings.fleet_direction
         self.rect.x = self.x
+
+    def draw(self):
+        """Draw the alien and its health bar on the screen."""
+        self.screen.blit(self.image, self.rect)
+        self.draw_health_bar()
+
+    def draw_health_bar(self):
+        """Draw a health bar over the alien to show its remaining hit points."""
+        if self.hit_points < self.max_hit_points:
+            bar_length = 30  
+            bar_height = 5  
+            fill = (self.hit_points / self.max_hit_points) * bar_length
+            health_bar_rect = pygame.Rect(0, 0, bar_length, bar_height)
+            fill_rect = pygame.Rect(0, 0, fill, bar_height)
+            health_bar_rect.centerx = self.rect.centerx
+            health_bar_rect.top = self.rect.top - 10  
+            pygame.draw.rect(self.screen, (255, 0, 0), fill_rect.move(health_bar_rect.topleft))
+            pygame.draw.rect(self.screen, (255, 255, 255), health_bar_rect, 1) 
+

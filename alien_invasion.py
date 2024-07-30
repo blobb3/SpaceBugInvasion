@@ -225,6 +225,8 @@ class AlienInvasion:
         self.screen.fill(self.settings.bg_color)  # Redraw the screen during each pass through the loop 
         for bullet in self.bullets.sprites():
             bullet.draw_bullet()
+        for alien in self.aliens.sprites():
+            alien.draw() 
         self.ship.blitme()  # Draw the ship on the screen on top of the background
         self.aliens.draw(self.screen)  # Make aliens appear
         self.explosions.draw(self.screen)  # Draw explosions
