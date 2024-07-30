@@ -60,35 +60,18 @@ class AlienInvasion:
         self.play_button = Button(self, "Play")
 
         # Load sounds
-        try:
-            self.start_sound = pygame.mixer.Sound('sounds/commander/mission_start.wav')
-            self.start_sound.set_volume(0.5)
-            print("Start sound loaded successfully.")
-        except pygame.error as e:
-            print(f"Failed to load start sound: {e}")
+        self.start_sound = pygame.mixer.Sound('sounds/commander/mission_start.wav')
+        self.start_sound.set_volume(0.5)
 
-        try:
-            self.new_mission_sound = pygame.mixer.Sound('sounds/commander/new_mission.wav')
-            self.new_mission_sound.set_volume(0.5)
-            print("New mission sound loaded successfully.")
-        except pygame.error as e:
-            print(f"Failed to load new mission sound: {e}")
+        self.new_mission_sound = pygame.mixer.Sound('sounds/commander/new_mission.wav')
+        self.new_mission_sound.set_volume(0.5)
 
-        try:
-            self.shoot_sound = pygame.mixer.Sound('sounds/shooting/alienshoot1.wav')
-            self.shoot_sound.set_volume(0.3)
-            print("Shoot sound loaded successfully.")
-        except pygame.error as e:
-            print(f"Failed to load shoot sound: {e}")
+        self.shoot_sound = pygame.mixer.Sound('sounds/shooting/alienshoot1.wav')
+        self.shoot_sound.set_volume(0.3)
 
         # Load and play background music
-        try:
-            mixer.music.load('sounds/background/MOONSTAGE_Nobass_OGG.ogg')
-            mixer.music.set_volume(0.3)  # Set volume to 30%
-            print("Background music loaded successfully.")
-        except pygame.error as e:
-            print(f"Failed to load background music: {e}")
-
+        mixer.music.load('sounds/background/MOONSTAGE_Nobass_OGG.ogg')
+        mixer.music.set_volume(0.3)  # Set volume to 30%
 
     # game is controlled through run_game()-method
     def run_game(self):
