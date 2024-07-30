@@ -13,7 +13,7 @@ class GameUpdates:
         for bullet in self.ai_game.bullets.copy():
             if bullet.rect.bottom <= 0:
                 self.ai_game.bullets.remove(bullet)
-        self.ai_game._check_bullet_alien_collisions()
+        self.ai_game.gamemanagement.check_bullet_alien_collisions()
 
     def update_aliens(self):
         """Check if the fleet is at an edge, then update positions"""
@@ -23,8 +23,7 @@ class GameUpdates:
         # look for alien-ship collisions
         if pygame.sprite.spritecollideany(self.ai_game.ship, self.ai_game.aliens):
             print("Bug Alert! Ship infested!")
-            self.ai_game._ship_hit()
+            self.ai_game.gamemanagement.ship_hit()
 
         # look for aliens hitting the bottom of the screen
         self.ai_game._check_aliens_bottom()
-

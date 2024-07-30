@@ -16,6 +16,7 @@ import numpy as np
 from event_handler import EventHandler
 from game_updates import GameUpdates
 from fleet import Fleet
+from game_management import GameManagement
 
 class AlienInvasion:
     """Overall class to manage game assets and behavior"""
@@ -50,6 +51,7 @@ class AlienInvasion:
         self.fleet = Fleet(self)
         self.eventhandler = EventHandler(self)
         self.gameupdates = GameUpdates(self)
+        self.gamemanagement = GameManagement(self)
 
         self.fleet.create_fleet()
 
@@ -117,54 +119,6 @@ class AlienInvasion:
             new_bullet = Bullet(self)
             self.bullets.add(new_bullet)
 
-    def _update_bullets(self):
-        """Update position of bullets and get rid of old bullets."""
-        # Update bullet positions.
-        self.bullets.update()
-
-        # Get rid of bullets that have disappeared.
-        for bullet in self.bullets.copy():
-            if bullet.rect.bottom <= 0:
-                self.bullets.remove(bullet)
-        self._check_bullet_alien_collisions()
-    
-    def _check_bullet_alien_collisions(self):
-        """Respond to bullet-alien collisions."""
-        # Check for any bullets that have hit aliens.
-        # True makes the bullet disappear upon collision, False keeps the alien active.
-        collisions = pygame.sprite.groupcollide(self.bullets, self.aliens, True, False)
-
-        # Process collisions
-        for bullet in collisions:
-            for alien in collisions[bullet]:
-                # Call take_hit, which decrements an alien's life or destroys it
-                if alien.take_hit():
-                    # Create an explosion effect at the alien's center
-                    explosion = Explosion(self, alien.rect.center)
-                    self.explosions.add(explosion)
-                    # Remove the alien from the group
-                    self.aliens.remove(alien)
-                    # Update the score
-                    self.stats.score += self.settings.alien_points
-                    self.sb.prep_score()
-                    self.sb.check_high_score()
-
-        # If all aliens are destroyed, reset the level
-        if not self.aliens:
-            self._start_new_level()
-
-    def _start_new_level(self):
-        """Handles the logic to start a new level."""
-        # Destroy existing bullets, reset bullet group
-        self.bullets.empty()
-        # Create a new fleet of aliens
-        self.fleet.create_fleet()
-        # Increase the level count
-        self.stats.level += 1
-        self.sb.prep_level()
-        # Possibly increase game difficulty here
-        self.settings.increase_speed()
-
     def _update_screen(self):
         """Update images on the screen, and flip to the new screen."""
         self.screen.fill(self.settings.bg_color)  # Redraw the screen during each pass through the loop 
@@ -185,12 +139,40 @@ class AlienInvasion:
 
         pygame.display.flip()  # Make the most recently drawn screen visible
 
-    def _ship_hit(self):
-        """Respond to the ship being hit by an alien."""
-        if self.stats.ships_left > 0:
-            # Decrement ships_left, and update scoreboard
-            self.stats.ships_left -= 1
+    def _check_aliens_bottom(self):
+        """Check if any aliens have reached the bottom of the screen"""
+        for alien in self.aliens.sprites():
+            if alien.rect.bottom >= self.settings.screen_height:
+                # Treat this the same as if the ship got hit
+                self.gamemanagement.ship_hit()
+                break
+
+    def _check_play_button(self, mouse_pos):
+        """Start a new game when the player clicks play"""
+        button_clicked = self.play_button.rect.collidepoint(mouse_pos)
+        if button_clicked and not self.game_active:
+
+            # Play start sound
+            if self.stats.games_played == 0:
+                self.start_sound.play()
+            else:
+                self.new_mission_sound.play()
+
+            # Pause briefly to let the sound play (adjust as needed)
+            pygame.time.delay(1000)  # 1000 milliseconds delay (1 second)
+
+            # Start background music
+            mixer.music.play(-1)  # -1 plays the music in an infinite loop
+
+            # Reset the game settings
+            self.settings.initialize_dynamic_settings()
+
+            # Reset the game statistics
+            self.stats.reset_stats()
+            self.sb.prep_score()
+            self.sb.prep_level()
             self.sb.prep_ships()
+            self.game_active = True
 
             # Get rid of any remaining bullets and aliens
             self.bullets.empty()
@@ -200,60 +182,11 @@ class AlienInvasion:
             self.fleet.create_fleet()
             self.ship.center_ship()
 
-            # Pause
-            sleep(0.5) # pauses program execution for half a second
-        else:
-            self.game_active = False # when the player has no ships left => game active is false
-            pygame.mouse.set_visible(True)
+            # Hide the mouse cursor
+            pygame.mouse.set_visible(False)
 
-    def _check_aliens_bottom(self):
-        """Check if any aliens have reached the bottom of the screen"""
-        for alien in self.aliens.sprites():
-            if alien.rect.bottom >= self.settings.screen_height:
-                # Treat this the same as if the ship got hit
-                self._ship_hit()
-                break
-
-    def _check_play_button(self, mouse_pos):
-        """Start a new game when the player clicks play"""
-        button_clicked = self.play_button.rect.collidepoint(mouse_pos)
-        if button_clicked and not self.game_active:
-
-            # Play start sound
-                if self.stats.games_played == 0:
-                    self.start_sound.play()
-                else:
-                    self.new_mission_sound.play()
-
-                # Pause briefly to let the sound play (adjust as needed)
-                pygame.time.delay(1000)  # 500 milliseconds delay (0.5 seconds)
-
-                # Start background music
-                mixer.music.play(-1)  # -1 plays the music in an infinite loop
-
-                # Reset the game settings
-                self.settings.initialize_dynamic_settings()
-
-                # Reset the game statistics
-                self.stats.reset_stats()
-                self.sb.prep_score()
-                self.sb.prep_level()
-                self.sb.prep_ships()
-                self.game_active = True
-
-                # Get rid of any remaining bullets and aliens
-                self.bullets.empty()
-                self.aliens.empty()
-
-                # Create a new fleet and center the ship
-                self.fleet.create_fleet()
-                self.ship.center_ship()
-
-                # Hide the mouse cursor
-                pygame.mouse.set_visible(False)
-
-                # Increment games_played
-                self.stats.games_played += 1
+            # Increment games_played
+            self.stats.games_played += 1
 
 if __name__ == '__main__':
     # Make a game instance, and run the game.
